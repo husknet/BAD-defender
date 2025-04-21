@@ -3,127 +3,128 @@ import geoip from 'geoip-lite';
 import stringSimilarity from 'string-similarity';
 
 const KNOWN_BOT_ISPS = [
-  "cogent communications, inc.",
-  "c-lutions inc",
-  "worldstream bv",
-  "amazon.com",
-  "global secure layer",
-  "rgt/smp",
-  "tzulo inc",
-  "cyber assets fzco",
-  "falco networks b.v.",
-  "pjsc rostelecom",
-  "gtd internet s.a.",
-  "meta networks inc",
-  "private layer inc",
-  "bucklog sarl",
-  "fbw reseaux fibres inc",
-  "openvpn",
-  "huawei cloud hongkong region",
-  "excitel broadband pvt ltd",
-  "vpn consumer frankfurt germany",
-  "m nets sal",
-  "hostroyale technologies pvt ltd",
-  "the constant company llc",
+  "RGT/SMP",
+  "tzulo, inc.",
+  "Cyber Assets FZCO",
+  "Falco Networks B.V.",
+  "PJSC Rostelecom",
+  "Gtd Internet S.A.",
+  "Meta Networks Inc",
+  "PRIVATE LAYER INC",
+  "Bucklog SARL",
+  "FBW Reseaux Fibres inc.",
+  "OpenVPN",
+  "Huawei Cloud Hongkong Region",
+  "Excitel Broadband Pvt Ltd",
+  "VPN Consumer Frankfurt, Germany",
+  "M Nets SAL",
+  "HostRoyale Technologies Pvt Ltd",
+  "The Constant Company, LLC",
   "bgm",
-  "microcom informatique inc",
-  "contabo inc",
-  "telecable residencial",
-  "network for tor-exit traffic",
-  "logicweb inc",
-  "microsoft corp",
-  "microsoft corporation",
-  "microsoft limited",
-  "microsoft",
-  "google llc",
-  "barry hamel equipment ltd",
-  "charter communications",
-  "dlf cable network",
-  "packethub s.a.",
-  "datacamp s.r.o.",
-  "bharti airtel limited",
-  "clouvider",
-  "facebook",
-  "internet archive",
-  "quickpacket llc",
-  "amazon data services singapore",
-  "pjsc mts sverdlovsk region",
-  "home_dsl",
-  "amazon data services nova",
-  "m247 ltd berlin infrastructure",
-  "bretagne telecom sasu",
-  "m247 ltd - brazil infrastructure",
-  "zap-hosting.com - if you want more power",
-  "zap-hosting gmbh",
-  "artic solutions sarl",
-  "ucloud",
-  "cox communications inc",
-  "onyphe sas",
-  "internet utilities europe and asia limited",
-  "kyocera avx components (dresden) gmbh",
-  "blix group as",
-  "kaopu cloud hk limited",
-  "total server solutions llc",
-  "internet utilities africa (pty) ltd",
-  "atria convergence technologies ltd",
-  "linode",
-  "linode llc",
-  "bayer ag germany leverkusen",
-  "terago networks inc",
-  "zscaler inc",
-  "bt global communications india private limited-access",
-  "not surf net",
-  "nothing to hide",
-  "total play telecomunicaciones sa de cv",
-  "driftnet ltd",
-  "telstra limited",
-  "ovh us llc",
-  "tt dotcom sdn bhd",
-  "ovh (nwk)",
-  "ovh sas",
-  "ovh hosting inc",
-  "zayo bandwidth",
-  "accenture llp",
-  "kyivstar gsm",
-  "cascades",
-  "netcraft",
-  "rockion llc",
-  "sudhana telecommunications private limited",
-  "compass compression services ltd",
-  "digitalocean",
-  "amazon technologies inc",
-  "datacamp limited",
-  "helsinki finland",
-  "northerntel limited partnership",
-  "china unicom shandong province network",
-  "china unicom shanghai city network",
-  "china unicom henan province network",
-  "kddi corporation",
-  "reliance jio infocomm limited",
-  "hetzner online gmbh",
-  "alibaba",
-  "oracle corporation",
-  "softlayer technologies",
-  "fastly",
-  "cloudflare",
-  "akamai technologies inc",
-  "hurricane electric",
-  "hostwinds",
-  "choopa",
-  "contabo gmbh",
-  "leaseweb",
-  "leaseweb deutschland gmbh",
-  "censys inc",
-  "windscribe",
-  "hatching international b.v.",
-  "asm technologies",
-  "amazon.com inc",
-  "amazon data services ireland limited",
-  "scaleway",
-  "vultr",
-  "ubiquity"
+  "Microcom Informatique, Inc.",
+  "Contabo Inc",
+  "TELECABLE RESIDENCIAL",
+  "Network for Tor-Exit traffic.",
+  "LogicWeb Inc.",
+  "Microsoft Corp",
+  "Google LLC",
+  "Microsoft Corporation",
+  "Contabo Inc.",
+  "Unknown",
+  "Barry Hamel Equipment Ltd",
+  "Charter Communications",
+  "DLF Cable Network",
+  "Packethub S.A.",
+  "DataCamp s.r.o.",
+  "Bharti Airtel Limited",
+  "Clouvider",
+  "Facebook",
+  "Internet Archive",
+  "QuickPacket, LLC",
+  "Amazon Data Services Singapore",
+  "PJSC MTS Sverdlovsk region",
+  "HOME_DSL",
+  "Amazon Data Services NoVa",
+  "M247 LTD Berlin Infrastructure",
+  "BRETAGNE TELECOM SASU",
+  "M247 Ltd - Brazil Infrastructure",
+  "ZAP-Hosting.com - IF YOU WANT MORE POWER",
+  "ZAP-Hosting GmbH",
+  "Artic Solutions SARL",
+  "UCLOUD",
+  "Cox Communications Inc.",
+  "ONYPHE SAS",
+  "Internet Utilities Europe and Asia Limited",
+  "KYOCERA AVX Components (Dresden) GmbH",
+  "Blix Group AS",
+  "Kaopu Cloud HK Limited",
+  "Cyber Assets FZCO",
+  "Total server solutions LLC",
+  "Internet Utilities Africa (PTY) LTD",
+  "Atria Convergence Technologies Ltd.,",
+  "Linode",
+  "Bayer AG, Germany, Leverkusen",
+  "TeraGo Networks Inc.",
+  "Microsoft Corporation",
+  "Zscaler, Inc.",
+  "BT global Communications India Private Limited-Access",
+  "Not SURF Net",
+  "Nothing to hide",
+  "TOTAL PLAY TELECOMUNICACIONES SA DE CV",
+  "Driftnet Ltd",
+  "Telstra Limited",
+  "OVH US LLC",
+  "TT DOTCOM SDN BHD",
+  "OVH (NWK)",
+  "Zayo Bandwidth",
+  "Accenture LLP",
+  "Kyivstar GSM",
+  "Cascades",
+  "Microsoft Limited",
+  "Netcraft",
+  "Rockion LLC",
+  "Sudhana Telecommunications Private Limited",
+  "COMPASS COMPRESSION SERVICES LTD",
+  "DigitalOcean",
+  "Amazon Technologies Inc.",
+  "Google LLC",
+  "Datacamp Limited",
+  "Helsinki, Finland",
+  "NorthernTel Limited Partnership",
+  "China Unicom Shandong province network",
+  "CHINA UNICOM Shanghai city network",
+  "China Unicom Henan province network",
+  "KDDI CORPORATION",
+  "Reliance Jio Infocomm Limited",
+  "Linode, LLC",
+  "OVH SAS",
+  "OVH Hosting, Inc.",
+  "Hetzner Online GmbH",
+  "Alibaba",
+  "Oracle Corporation",
+  "SoftLayer Technologies",
+  "Fastly",
+  "Cloudflare",
+  "Cloudflare London, LLC",
+  "Akamai Technologies",
+  "Akamai Technologies Inc.",
+  "Hurricane Electric",
+  "Hostwinds",
+  "Choopa",
+  "Contabo GmbH",
+  "Leaseweb",
+  "Censys, Inc.",
+  "Windscribe",
+  "Hatching International B.V.",
+  "Asm Technologies",
+  "Leaseweb Deutschland GmbH",
+  "Amazon.com, Inc.",
+  "Amazon Data Services Ireland Limited",
+  "Scaleway",
+  "Vultr",
+  "Ubiquity"
 ];
-const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335' /* etc */];
+const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335'];
 
 const TRAFFIC_THRESHOLD = 10;
 const TRAFFIC_TIMEFRAME = 30 * 1000;
@@ -137,6 +138,7 @@ function fuzzyMatchISP(isp) {
 
 async function checkIPReputation(ip) {
   try {
+    console.log("🔍 Calling AbuseIPDB for:", ip);
     const res = await axios.get(`https://api.abuseipdb.com/api/v2/check`, {
       headers: {
         Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd',
@@ -144,9 +146,9 @@ async function checkIPReputation(ip) {
       },
       params: { ipAddress: ip, maxAgeInDays: 30 }
     });
-
     return res.data.data.abuseConfidenceScore >= 50;
-  } catch {
+  } catch (error) {
+    console.error("❌ AbuseIPDB failed:", error.message);
     return false;
   }
 }
@@ -160,98 +162,105 @@ function analyzeHeaders(headers) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { user_agent, ip, fingerprint_score } = req.body;
-  const headers = req.headers;
-
-  if (!ip || !user_agent) {
-    return res.status(400).json({ error: 'Missing required fields.' });
-  }
-
-  const botPatterns = [/bot/, /crawl/, /scraper/, /spider/, /httpclient/, /python/];
-  const isBotUserAgent = botPatterns.some(p => p.test(user_agent.toLowerCase()));
-
-  const isIPAbuser = await checkIPReputation(ip);
-
-  let isp = 'unknown', asn = 'unknown', country = 'unknown';
   try {
-    const GEO_API_KEY = 'dcd7f3c53127433686c5b29f8b0debf6'; // Replace this
-    const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
-      params: { apiKey: GEO_API_KEY, ip }
-    });
+    console.log("✅ API Request received");
 
-    isp = geoRes.data?.isp?.toLowerCase() || 'unknown';
-    asn = geoRes.data?.asn || 'unknown';
-    country = geoRes.data?.country_name || 'unknown';
-  } catch (err) {
-    const geoData = geoip.lookup(ip);
-    country = geoData?.country || 'unknown';
-  }
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  const isScraperISP = fuzzyMatchISP(isp);
-  const isDataCenterASN = KNOWN_BOT_ASNS.includes(asn);
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const now = Date.now();
-  if (!TRAFFIC_DATA[ip]) TRAFFIC_DATA[ip] = [];
-  TRAFFIC_DATA[ip] = TRAFFIC_DATA[ip].filter(ts => now - ts < TRAFFIC_TIMEFRAME);
-  TRAFFIC_DATA[ip].push(now);
-  const isSuspiciousTraffic = TRAFFIC_DATA[ip].length > TRAFFIC_THRESHOLD;
+    const { user_agent, ip, fingerprint_score } = req.body;
+    const headers = req.headers;
 
-  const isMissingHeaders = analyzeHeaders(headers);
-  const isLowFingerprintScore = fingerprint_score !== undefined && fingerprint_score < 0.3;
+    console.log("🌐 IP:", ip);
+    console.log("🕵️‍♂️ User-Agent:", user_agent);
 
-  const riskFactors = [
-    isBotUserAgent,
-    isScraperISP,
-    isIPAbuser,
-    isDataCenterASN,
-    isSuspiciousTraffic,
-    isMissingHeaders,
-    isLowFingerprintScore
-  ];
+    if (!ip || !user_agent) {
+      console.warn("⚠️ Missing required fields");
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
 
-  const score = riskFactors.filter(Boolean).length / riskFactors.length;
-  const isBot = score >= 0.5;
+    const botPatterns = [/bot/, /crawl/, /scraper/, /spider/, /httpclient/, /python/];
+    const isBotUserAgent = botPatterns.some(p => p.test(user_agent.toLowerCase()));
+    console.log("🔎 Step 1: User-Agent flag =", isBotUserAgent);
 
-  // 🧾 Log every request (for Render visibility/debugging)
-  console.log("======================================");
-  console.log("📥 New Detection Request:");
-  console.log("🌐 IP:", ip);
-  console.log("🌍 Country:", country);
-  console.log("🏢 ISP:", isp);
-  console.log("🏷️ ASN:", asn);
-  console.log("🕵️‍♂️ User-Agent:", user_agent);
-  console.log("🔍 Risk Score:", score.toFixed(2));
-  console.log("🚫 Blocked:", isBot);
-  console.log("🧠 Breakdown:");
-  console.log("   - isBotUserAgent:", isBotUserAgent);
-  console.log("   - isScraperISP:", isScraperISP);
-  console.log("   - isIPAbuser:", isIPAbuser);
-  console.log("   - isDataCenterASN:", isDataCenterASN);
-  console.log("   - isSuspiciousTraffic:", isSuspiciousTraffic);
-  console.log("   - isMissingHeaders:", isMissingHeaders);
-  console.log("   - isLowFingerprintScore:", isLowFingerprintScore);
-  console.log("======================================\n");
+    const isIPAbuser = await checkIPReputation(ip);
+    console.log("🔎 Step 2: AbuseIPDB flag =", isIPAbuser);
 
-  return res.status(200).json({
-    is_bot: isBot,
-    score,
-    country,
-    details: {
-      isp, asn, user_agent,
+    let isp = 'unknown', asn = 'unknown', country = 'unknown';
+    try {
+      console.log("🌍 Step 3: Querying ipgeolocation.io...");
+      const GEO_API_KEY = 'dcd7f3c53127433686c5b29f8b0debf6';
+      const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
+        params: { apiKey: GEO_API_KEY, ip }
+      });
+
+      isp = geoRes.data?.isp?.toLowerCase() || 'unknown';
+      asn = geoRes.data?.asn || 'unknown';
+      country = geoRes.data?.country_name || 'unknown';
+    } catch (err) {
+      console.warn("⚠️ IPGeolocation failed, using geoip-lite");
+      const geoData = geoip.lookup(ip);
+      country = geoData?.country || 'unknown';
+    }
+
+    const isScraperISP = fuzzyMatchISP(isp);
+    const isDataCenterASN = KNOWN_BOT_ASNS.includes(asn);
+    console.log("🏢 Step 4: ISP Match =", isScraperISP, "| ASN Match =", isDataCenterASN);
+
+    const now = Date.now();
+    if (!TRAFFIC_DATA[ip]) TRAFFIC_DATA[ip] = [];
+    TRAFFIC_DATA[ip] = TRAFFIC_DATA[ip].filter(ts => now - ts < TRAFFIC_TIMEFRAME);
+    TRAFFIC_DATA[ip].push(now);
+    const isSuspiciousTraffic = TRAFFIC_DATA[ip].length > TRAFFIC_THRESHOLD;
+    console.log("📈 Step 5: Suspicious Traffic =", isSuspiciousTraffic);
+
+    const isMissingHeaders = analyzeHeaders(headers);
+    const isLowFingerprintScore = fingerprint_score !== undefined && fingerprint_score < 0.3;
+    console.log("🧠 Step 6: Fingerprint =", fingerprint_score, "| Missing Headers =", isMissingHeaders);
+
+    const riskFactors = [
       isBotUserAgent,
       isScraperISP,
       isIPAbuser,
-      isSuspiciousTraffic,
       isDataCenterASN,
+      isSuspiciousTraffic,
       isMissingHeaders,
       isLowFingerprintScore
-    }
-  });
+    ];
+
+    const score = riskFactors.filter(Boolean).length / riskFactors.length;
+    const isBot = score >= 0.5;
+
+    // ✅ Final logging
+    console.log("✅ Step 7: Final Decision");
+    console.log("   - Risk Score:", score.toFixed(2));
+    console.log("   - Blocked?:", isBot);
+    console.log("   - Details:", {
+      isp, asn, isBotUserAgent, isScraperISP, isIPAbuser,
+      isSuspiciousTraffic, isDataCenterASN, isMissingHeaders, isLowFingerprintScore
+    });
+
+    return res.status(200).json({
+      is_bot: isBot,
+      score,
+      country,
+      details: {
+        isp, asn, user_agent,
+        isBotUserAgent,
+        isScraperISP,
+        isIPAbuser,
+        isSuspiciousTraffic,
+        isDataCenterASN,
+        isMissingHeaders,
+        isLowFingerprintScore
+      }
+    });
+  } catch (err) {
+    console.error("❌ UNEXPECTED ERROR:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
