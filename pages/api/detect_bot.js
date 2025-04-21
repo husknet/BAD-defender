@@ -2,7 +2,7 @@ import axios from 'axios';
 import geoip from 'geoip-lite';
 import stringSimilarity from 'string-similarity';
 
-const KNOWN_BOT_ISPS = [ 
+const KNOWN_BOT_ISPS = [
   "cogent communications, inc.",
   "c-lutions inc",
   "worldstream bv",
@@ -36,7 +36,6 @@ const KNOWN_BOT_ISPS = [
   "microsoft limited",
   "microsoft",
   "google llc",
-  "unknown",
   "barry hamel equipment ltd",
   "charter communications",
   "dlf cable network",
@@ -107,8 +106,6 @@ const KNOWN_BOT_ISPS = [
   "softlayer technologies",
   "fastly",
   "cloudflare",
-  "cloudflare london llc",
-  "akamai technologies",
   "akamai technologies inc",
   "hurricane electric",
   "hostwinds",
@@ -124,8 +121,9 @@ const KNOWN_BOT_ISPS = [
   "amazon data services ireland limited",
   "scaleway",
   "vultr",
-  "ubiquity" ];
-const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335', /* etc */ ];
+  "ubiquity"
+];
+const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335' /* etc */];
 
 const TRAFFIC_THRESHOLD = 10;
 const TRAFFIC_TIMEFRAME = 30 * 1000;
@@ -140,7 +138,10 @@ function fuzzyMatchISP(isp) {
 async function checkIPReputation(ip) {
   try {
     const res = await axios.get(`https://api.abuseipdb.com/api/v2/check`, {
-      headers: { Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd', Accept: 'application/json' },
+      headers: {
+        Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd',
+        Accept: 'application/json'
+      },
       params: { ipAddress: ip, maxAgeInDays: 30 }
     });
 
@@ -152,7 +153,8 @@ async function checkIPReputation(ip) {
 
 function analyzeHeaders(headers) {
   const suspiciousHeaders = [
-    'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'sec-ch-ua', 'sec-ch-ua-platform'
+    'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest',
+    'sec-ch-ua', 'sec-ch-ua-platform'
   ];
   return suspiciousHeaders.some(h => !headers[h]);
 }
@@ -175,18 +177,13 @@ export default async function handler(req, res) {
   const botPatterns = [/bot/, /crawl/, /scraper/, /spider/, /httpclient/, /python/];
   const isBotUserAgent = botPatterns.some(p => p.test(user_agent.toLowerCase()));
 
-  // AbuseIPDB Score
   const isIPAbuser = await checkIPReputation(ip);
 
-  // Geo + ISP Logic using ipgeolocation.io
   let isp = 'unknown', asn = 'unknown', country = 'unknown';
   try {
     const GEO_API_KEY = 'dcd7f3c53127433686c5b29f8b0debf6'; // Replace this
     const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
-      params: {
-        apiKey: GEO_API_KEY,
-        ip: ip
-      }
+      params: { apiKey: GEO_API_KEY, ip }
     });
 
     isp = geoRes.data?.isp?.toLowerCase() || 'unknown';
@@ -200,18 +197,15 @@ export default async function handler(req, res) {
   const isScraperISP = fuzzyMatchISP(isp);
   const isDataCenterASN = KNOWN_BOT_ASNS.includes(asn);
 
-  // Traffic behavior
   const now = Date.now();
   if (!TRAFFIC_DATA[ip]) TRAFFIC_DATA[ip] = [];
   TRAFFIC_DATA[ip] = TRAFFIC_DATA[ip].filter(ts => now - ts < TRAFFIC_TIMEFRAME);
   TRAFFIC_DATA[ip].push(now);
   const isSuspiciousTraffic = TRAFFIC_DATA[ip].length > TRAFFIC_THRESHOLD;
 
-  // Header fingerprinting
   const isMissingHeaders = analyzeHeaders(headers);
   const isLowFingerprintScore = fingerprint_score !== undefined && fingerprint_score < 0.3;
 
-  // Final Decision
   const riskFactors = [
     isBotUserAgent,
     isScraperISP,
@@ -225,7 +219,27 @@ export default async function handler(req, res) {
   const score = riskFactors.filter(Boolean).length / riskFactors.length;
   const isBot = score >= 0.5;
 
-  res.status(200).json({
+  // 🧾 Log every request (for Render visibility/debugging)
+  console.log("======================================");
+  console.log("📥 New Detection Request:");
+  console.log("🌐 IP:", ip);
+  console.log("🌍 Country:", country);
+  console.log("🏢 ISP:", isp);
+  console.log("🏷️ ASN:", asn);
+  console.log("🕵️‍♂️ User-Agent:", user_agent);
+  console.log("🔍 Risk Score:", score.toFixed(2));
+  console.log("🚫 Blocked:", isBot);
+  console.log("🧠 Breakdown:");
+  console.log("   - isBotUserAgent:", isBotUserAgent);
+  console.log("   - isScraperISP:", isScraperISP);
+  console.log("   - isIPAbuser:", isIPAbuser);
+  console.log("   - isDataCenterASN:", isDataCenterASN);
+  console.log("   - isSuspiciousTraffic:", isSuspiciousTraffic);
+  console.log("   - isMissingHeaders:", isMissingHeaders);
+  console.log("   - isLowFingerprintScore:", isLowFingerprintScore);
+  console.log("======================================\n");
+
+  return res.status(200).json({
     is_bot: isBot,
     score,
     country,
