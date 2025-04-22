@@ -123,6 +123,7 @@ const KNOWN_BOT_ISPS = [
   "Amazon Data Services Ireland Limited",
   "Scaleway",
   "Vultr",
+  "apnic research and development",
   "private customer",
   "Ubiquity"
 ];
