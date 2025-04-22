@@ -3,7 +3,7 @@ import geoip from 'geoip-lite';
 import stringSimilarity from 'string-similarity';
 
 const KNOWN_BOT_ISPS = [
-  // ✅ Keep your list as is
+  
   "RGT/SMP",
   "cloudflarenet eu",
   "tzulo, inc.",
@@ -129,7 +129,7 @@ const KNOWN_BOT_ISPS = [
   "Ubiquity"
 ];
 
-const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335']; // ✅ Add more as needed
+const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335'];
 
 const TRAFFIC_THRESHOLD = 10;
 const TRAFFIC_TIMEFRAME = 30 * 1000;
@@ -231,12 +231,32 @@ export default async function handler(req, res) {
     const score = riskFactors.filter(Boolean).length / riskFactors.length;
     const isBot = score >= 0.5;
 
+    // ✅ Log everything to Railway console
+    console.log("📥 Detection Log:");
+    console.log("   IP:", ip);
+    console.log("   Country:", country);
+    console.log("   ISP:", isp);
+    console.log("   ASN:", asn);
+    console.log("   User-Agent:", user_agent);
+    console.log("   Score:", score.toFixed(2), "| Bot:", isBot);
+    console.log("   Flags:", {
+      isBotUserAgent,
+      isScraperISP,
+      isIPAbuser,
+      isDataCenterASN,
+      isSuspiciousTraffic,
+      isMissingHeaders,
+      isLowFingerprintScore
+    });
+
     return res.status(200).json({
       is_bot: isBot,
       score,
       country,
       details: {
-        isp, asn, user_agent,
+        isp,
+        asn,
+        user_agent,
         isBotUserAgent,
         isScraperISP,
         isIPAbuser,
