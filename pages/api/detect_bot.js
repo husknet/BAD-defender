@@ -138,7 +138,7 @@ function fuzzyMatchISP(isp) {
 async function checkIPReputation(ip) {
   try {
     const res = await axios.get(`https://api.abuseipdb.com/api/v2/check`, {
-      headers: { Key: 'free-abuseipdb-key', Accept: 'application/json' },
+      headers: { Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd', Accept: 'application/json' },
       params: { ipAddress: ip, maxAgeInDays: 30 }
     });
 
@@ -179,7 +179,7 @@ export default async function handler(req, res) {
   // Geo + ISP Logic using ipgeolocation.io
   let isp = 'unknown', asn = 'unknown', country = 'unknown';
   try {
-    const GEO_API_KEY = 'your_ipgeolocation_api_key'; // Replace this
+    const GEO_API_KEY = 'dcd7f3c53127433686c5b29f8b0debf6'; // Replace this
     const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
       params: {
         apiKey: GEO_API_KEY,
