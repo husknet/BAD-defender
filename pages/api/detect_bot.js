@@ -5,6 +5,7 @@ import stringSimilarity from 'string-similarity';
 const KNOWN_BOT_ISPS = [
   // ✅ Keep your list as is
   "RGT/SMP",
+  "cloudflarenet eu",
   "tzulo, inc.",
   "Cyber Assets FZCO",
   "Falco Networks B.V.",
