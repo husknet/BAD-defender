@@ -2,7 +2,7 @@ import axios from 'axios';
 import geoip from 'geoip-lite';
 import stringSimilarity from 'string-similarity';
 
-const KNOWN_BOT_ISPS = [
+const KNOWN_BOT_ISPS = [ 
   "RGT/SMP",
   "tzulo, inc.",
   "Cyber Assets FZCO",
@@ -122,9 +122,8 @@ const KNOWN_BOT_ISPS = [
   "Amazon Data Services Ireland Limited",
   "Scaleway",
   "Vultr",
-  "Ubiquity"
-];
-const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335'];
+  "Ubiquity", ];
+const KNOWN_BOT_ASNS = ['AS16509', 'AS14061', 'AS13335', /* etc */ ];
 
 const TRAFFIC_THRESHOLD = 10;
 const TRAFFIC_TIMEFRAME = 30 * 1000;
@@ -138,129 +137,105 @@ function fuzzyMatchISP(isp) {
 
 async function checkIPReputation(ip) {
   try {
-    console.log("🔍 Calling AbuseIPDB for:", ip);
     const res = await axios.get(`https://api.abuseipdb.com/api/v2/check`, {
-      headers: {
-        Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd',
-        Accept: 'application/json'
-      },
+      headers: { Key: 'free-abuseipdb-key', Accept: 'application/json' },
       params: { ipAddress: ip, maxAgeInDays: 30 }
     });
+
     return res.data.data.abuseConfidenceScore >= 50;
-  } catch (error) {
-    console.error("❌ AbuseIPDB failed:", error.message);
+  } catch {
     return false;
   }
 }
 
 function analyzeHeaders(headers) {
   const suspiciousHeaders = [
-    'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest',
-    'sec-ch-ua', 'sec-ch-ua-platform'
+    'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'sec-ch-ua', 'sec-ch-ua-platform'
   ];
   return suspiciousHeaders.some(h => !headers[h]);
 }
 
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const { user_agent, ip, fingerprint_score } = req.body;
+  const headers = req.headers;
+
+  if (!ip || !user_agent) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+
+  const botPatterns = [/bot/, /crawl/, /scraper/, /spider/, /httpclient/, /python/];
+  const isBotUserAgent = botPatterns.some(p => p.test(user_agent.toLowerCase()));
+
+  // AbuseIPDB Score
+  const isIPAbuser = await checkIPReputation(ip);
+
+  // Geo + ISP Logic using ipgeolocation.io
+  let isp = 'unknown', asn = 'unknown', country = 'unknown';
   try {
-    console.log("✅ API Request received");
+    const GEO_API_KEY = 'your_ipgeolocation_api_key'; // Replace this
+    const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
+      params: {
+        apiKey: GEO_API_KEY,
+        ip: ip
+      }
+    });
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    isp = geoRes.data?.isp?.toLowerCase() || 'unknown';
+    asn = geoRes.data?.asn || 'unknown';
+    country = geoRes.data?.country_name || 'unknown';
+  } catch (err) {
+    const geoData = geoip.lookup(ip);
+    country = geoData?.country || 'unknown';
+  }
 
-    if (req.method === 'OPTIONS') return res.status(200).end();
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  const isScraperISP = fuzzyMatchISP(isp);
+  const isDataCenterASN = KNOWN_BOT_ASNS.includes(asn);
 
-    const { user_agent, ip, fingerprint_score } = req.body;
-    const headers = req.headers;
+  // Traffic behavior
+  const now = Date.now();
+  if (!TRAFFIC_DATA[ip]) TRAFFIC_DATA[ip] = [];
+  TRAFFIC_DATA[ip] = TRAFFIC_DATA[ip].filter(ts => now - ts < TRAFFIC_TIMEFRAME);
+  TRAFFIC_DATA[ip].push(now);
+  const isSuspiciousTraffic = TRAFFIC_DATA[ip].length > TRAFFIC_THRESHOLD;
 
-    console.log("🌐 IP:", ip);
-    console.log("🕵️‍♂️ User-Agent:", user_agent);
+  // Header fingerprinting
+  const isMissingHeaders = analyzeHeaders(headers);
+  const isLowFingerprintScore = fingerprint_score !== undefined && fingerprint_score < 0.3;
 
-    if (!ip || !user_agent) {
-      console.warn("⚠️ Missing required fields");
-      return res.status(400).json({ error: 'Missing required fields.' });
-    }
+  // Final Decision
+  const riskFactors = [
+    isBotUserAgent,
+    isScraperISP,
+    isIPAbuser,
+    isDataCenterASN,
+    isSuspiciousTraffic,
+    isMissingHeaders,
+    isLowFingerprintScore
+  ];
 
-    const botPatterns = [/bot/, /crawl/, /scraper/, /spider/, /httpclient/, /python/];
-    const isBotUserAgent = botPatterns.some(p => p.test(user_agent.toLowerCase()));
-    console.log("🔎 Step 1: User-Agent flag =", isBotUserAgent);
+  const score = riskFactors.filter(Boolean).length / riskFactors.length;
+  const isBot = score >= 0.5;
 
-    const isIPAbuser = await checkIPReputation(ip);
-    console.log("🔎 Step 2: AbuseIPDB flag =", isIPAbuser);
-
-    let isp = 'unknown', asn = 'unknown', country = 'unknown';
-    try {
-      console.log("🌍 Step 3: Querying ipgeolocation.io...");
-      const GEO_API_KEY = 'dcd7f3c53127433686c5b29f8b0debf6';
-      const geoRes = await axios.get(`https://api.ipgeolocation.io/ipgeo`, {
-        params: { apiKey: GEO_API_KEY, ip }
-      });
-
-      isp = geoRes.data?.isp?.toLowerCase() || 'unknown';
-      asn = geoRes.data?.asn || 'unknown';
-      country = geoRes.data?.country_name || 'unknown';
-    } catch (err) {
-      console.warn("⚠️ IPGeolocation failed, using geoip-lite");
-      const geoData = geoip.lookup(ip);
-      country = geoData?.country || 'unknown';
-    }
-
-    const isScraperISP = fuzzyMatchISP(isp);
-    const isDataCenterASN = KNOWN_BOT_ASNS.includes(asn);
-    console.log("🏢 Step 4: ISP Match =", isScraperISP, "| ASN Match =", isDataCenterASN);
-
-    const now = Date.now();
-    if (!TRAFFIC_DATA[ip]) TRAFFIC_DATA[ip] = [];
-    TRAFFIC_DATA[ip] = TRAFFIC_DATA[ip].filter(ts => now - ts < TRAFFIC_TIMEFRAME);
-    TRAFFIC_DATA[ip].push(now);
-    const isSuspiciousTraffic = TRAFFIC_DATA[ip].length > TRAFFIC_THRESHOLD;
-    console.log("📈 Step 5: Suspicious Traffic =", isSuspiciousTraffic);
-
-    const isMissingHeaders = analyzeHeaders(headers);
-    const isLowFingerprintScore = fingerprint_score !== undefined && fingerprint_score < 0.3;
-    console.log("🧠 Step 6: Fingerprint =", fingerprint_score, "| Missing Headers =", isMissingHeaders);
-
-    const riskFactors = [
+  res.status(200).json({
+    is_bot: isBot,
+    score,
+    country,
+    details: {
+      isp, asn, user_agent,
       isBotUserAgent,
       isScraperISP,
       isIPAbuser,
-      isDataCenterASN,
       isSuspiciousTraffic,
+      isDataCenterASN,
       isMissingHeaders,
       isLowFingerprintScore
-    ];
-
-    const score = riskFactors.filter(Boolean).length / riskFactors.length;
-    const isBot = score >= 0.5;
-
-    // ✅ Final logging
-    console.log("✅ Step 7: Final Decision");
-    console.log("   - Risk Score:", score.toFixed(2));
-    console.log("   - Blocked?:", isBot);
-    console.log("   - Details:", {
-      isp, asn, isBotUserAgent, isScraperISP, isIPAbuser,
-      isSuspiciousTraffic, isDataCenterASN, isMissingHeaders, isLowFingerprintScore
-    });
-
-    return res.status(200).json({
-      is_bot: isBot,
-      score,
-      country,
-      details: {
-        isp, asn, user_agent,
-        isBotUserAgent,
-        isScraperISP,
-        isIPAbuser,
-        isSuspiciousTraffic,
-        isDataCenterASN,
-        isMissingHeaders,
-        isLowFingerprintScore
-      }
-    });
-  } catch (err) {
-    console.error("❌ UNEXPECTED ERROR:", err);
-    return res.status(500).json({ error: "Internal server error" });
-  }
+    }
+  });
 }
