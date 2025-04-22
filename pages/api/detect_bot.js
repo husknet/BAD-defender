@@ -32,7 +32,7 @@ const KNOWN_BOT_ISPS = [
   "Google LLC",
   "Microsoft Corporation",
   "Contabo Inc.",
-  "Unknown",
+  "c-lutions inc",
   "Barry Hamel Equipment Ltd",
   "Charter Communications",
   "DLF Cable Network",
