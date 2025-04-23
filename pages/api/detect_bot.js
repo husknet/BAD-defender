@@ -53,7 +53,7 @@ const KNOWN_BOT_ISPS = [
   "Network for Tor-Exit traffic.",
   "LogicWeb Inc.",
   "Microsoft Corp",
-  "Google LLC",
+  "google llc",
   "Microsoft Corporation",
   "Contabo Inc.",
   "c-lutions inc",
