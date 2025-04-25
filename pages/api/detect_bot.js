@@ -6,6 +6,7 @@ const KNOWN_BOT_ISPS = [
   
   "RGT/SMP",
   "ophl",
+  "egn dedicated servers asia optimized",
   "m247 ltd new york",
   "hornetsecurity gmbh",
   "onyphe sas",
