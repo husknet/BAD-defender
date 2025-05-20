@@ -5,6 +5,7 @@ import stringSimilarity from 'string-similarity';
 const KNOWN_BOT_ISPS = [
   
   "RGT/SMP",
+  "mimecast north america inc",
   "pulsar informatique inc.",
   "zap hosting.com",
   "national agency for network services",
