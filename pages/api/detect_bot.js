@@ -21,7 +21,6 @@ const KNOWN_BOT_ISPS = [
   "cdn77 chi pop",
   "united legwear",
   "cleardocks llc",
-  "sympatico hse",
   "centurylink communications, llc",
   "493networking.cc",
   "geofeed",
