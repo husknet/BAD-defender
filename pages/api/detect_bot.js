@@ -5,6 +5,7 @@ import stringSimilarity from 'string-similarity';
 const KNOWN_BOT_ISPS = [
   
   "RGT/SMP",
+  "brightspeed",
   "fbw networks sas",
   "soloway wright llp",
   "oracle public cloud",
