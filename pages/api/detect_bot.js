@@ -5,6 +5,7 @@ import stringSimilarity from 'string-similarity';
 const KNOWN_BOT_ISPS = [
   
   "RGT/SMP",
+  "ionos cloud vl5.wdr.gb",
   "estnoc global",
   "abuseradar.com",
   "m247 europe toronto infrastructure",
