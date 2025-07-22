@@ -25,7 +25,7 @@ const KNOWN_BOT_ISPS = [
   "VPN Consumer Frankfurt, Germany", "M Nets SAL", "HostRoyale Technologies Pvt Ltd", "The Constant Company, LLC", "bgm",
   "Microcom Informatique, Inc.", "Contabo Inc", "TELECABLE RESIDENCIAL", "Network for Tor-Exit traffic.", "LogicWeb Inc.",
   "Microsoft Corp", "google llc", "Microsoft Corporation", "Contabo Inc.", "c-lutions inc", "Barry Hamel Equipment Ltd",
-  "Charter Communications", "DLF Cable Network", "Packethub S.A.", "DataCamp s.r.o.", "Bharti Airtel Limited", "Clouvider",
+  "DLF Cable Network", "Packethub S.A.", "DataCamp s.r.o.", "Bharti Airtel Limited", "Clouvider",
   "Facebook", "Internet Archive", "QuickPacket, LLC", "Amazon Data Services Singapore", "PJSC MTS Sverdlovsk region", "HOME_DSL",
   "Amazon Data Services NoVa", "M247 LTD Berlin Infrastructure", "BRETAGNE TELECOM SASU", "M247 Ltd - Brazil Infrastructure",
   "ZAP-Hosting.com - IF YOU WANT MORE POWER", "ZAP-Hosting GmbH", "Artic Solutions SARL", "UCLOUD", "Cox Communications Inc.",
