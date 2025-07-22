@@ -42,7 +42,7 @@ const KNOWN_BOT_ISPS = [
   "Fastly", "Cloudflare", "Cloudflare London, LLC", "Akamai Technologies", "Akamai Technologies Inc.", "Hurricane Electric",
   "Hostwinds", "Choopa", "Contabo GmbH", "Leaseweb", "Censys, Inc.", "Windscribe", "Hatching International B.V.", "Asm Technologies",
   "Leaseweb Deutschland GmbH", "Amazon.com, Inc.", "Amazon Data Services Ireland Limited", "Scaleway", "Vultr",
-  "apnic research and development", "private customer", "Ubiquity"
+  "apnic research and development", "private customer", "Ubiquity", "liteserver"
 ];
 
 const WHITELISTED_ISPS = [
