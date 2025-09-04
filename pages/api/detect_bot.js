@@ -42,7 +42,8 @@ const KNOWN_BOT_ISPS = [
   "Fastly", "Cloudflare", "Cloudflare London, LLC", "Akamai Technologies", "Akamai Technologies Inc.", "Hurricane Electric",
   "Hostwinds", "Choopa", "Contabo GmbH", "Leaseweb", "Censys, Inc.", "Windscribe", "Hatching International B.V.", "Asm Technologies",
   "Leaseweb Deutschland GmbH", "Amazon.com, Inc.", "Amazon Data Services Ireland Limited", "Scaleway", "Vultr",
-  "apnic research and development", "private customer", "Ubiquity", "liteserver","digitalocean, llc","detai prosperous technologies limited"
+  "apnic research and development", "private customer", "Ubiquity", "liteserver","digitalocean, llc","detai prosperous technologies limited","contabo gmbh",
+  "kaspersky lab switzerland gmbh","abuseradar.com"
 ];
 
 const WHITELISTED_ISPS = [
@@ -200,5 +201,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 
