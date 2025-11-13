@@ -77,7 +77,7 @@ async function checkIPReputation(ip) {
   try {
     const res = await axios.get("https://api.abuseipdb.com/api/v2/check", {
       headers: {
-        Key: '000a4d9049d8d08013a3c7c18fe33a84a31075d8b1aa19cd0232078bfa68bccb3bb326bc2444cefd',
+        Key: 'e85e136dfafd24fab2ee9b68289165616bd809ef4fc274eae4179844d6a7c1d9e2891ef64bd0262b',
         Accept: 'application/json'
       },
       params: { ipAddress: ip, maxAgeInDays: 30 },
@@ -201,6 +201,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 
 
